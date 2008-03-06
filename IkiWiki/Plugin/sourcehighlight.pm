@@ -76,7 +76,7 @@ sub htmlize (@) { #{{{
 		} until defined $pid;
 
 		if (! $pid) {
-			if (! exec 'source-highlight', '--src-lang=java',  '--output=STDOUT') {
+			if (! exec 'source-highlight', '--src-lang='.$params{lang},  '--output=STDOUT') {
 				debug("failed to run source-highlight: $@");
 				print $params{content};
 				exit;
