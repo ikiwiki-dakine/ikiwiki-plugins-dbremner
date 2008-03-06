@@ -10,10 +10,33 @@ use strict;
 use IkiWiki 2.00;
 
 sub import { #{{{
-    	hook(type => "htmlize", id => "java", call => \&htmlize);
+	hook(type => "getopt", id => "tag", call => \&getopt);
+	hook(type => "checkconfig", id => "sourcehightlight", call => \&checkconfig);
 } # }}}
 
+sub getopt () { #{{{
+	eval q{use Getopt::Long};
+	error($@) if $@;
+	Getopt::Long::Configure('pass_through');
+	GetOptions("highlight-lang=s" => \$config{highlight_lang});
+} #}}}
 
+
+sub checkconfig(@){
+    debug("got checkconfig");
+    if (!defined $config{highlight_lang}){
+	error(gettext("sourcehightlight plugin will not without defining highlight_lang"));
+    }
+
+    my @langs=split(",",$config{highlight_lang});
+
+    foreach my $lang (@langs){
+	# we should check these for validity
+	hook(type => "htmlize", no_override => 1, id => $lang,
+	     call => sub { htmlize(lang=>$lang, @_) });
+    }
+
+}
 sub htmlize (@) { #{{{
 	my %params=@_;
 
