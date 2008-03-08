@@ -95,13 +95,19 @@ sub htmlize (@)
     }
     debug("TEXINPUTS=".$ENV{TEXINPUTS});
     debug("calling htlatex for ".$params{page});
-    system('htlatex','convertme.tex');
+    system('htlatex','index.tex');
+
+    foreach my $png (<*.png>){
+	my $destpng=$page."/".$png;
+	will_render($params{page},$destpng);
+	my $data=readfile($png,1);
+	writefile($config{destdir}."/".$destpng,$data);
+    }
 
     my $stylesheet=$page."/tex4ht.css";
-    debug("stylesheet=".$stylesheet);
     will_render($params{page},$stylesheet);
 
-    my $css=readfile("convertme.css");
+    my $css=readfile("index.css");
     writefile("tex4ht.css",$config{destdir}."/".$params{page},$css) || die "$!";
 
 
