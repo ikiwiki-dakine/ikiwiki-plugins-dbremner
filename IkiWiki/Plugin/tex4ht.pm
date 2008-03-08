@@ -103,7 +103,7 @@ sub htmlize (@)
 	my $destpng=$page."/".$png;
 	will_render($params{page},$destpng);
 	my $data=readfile($png,1);
-	writefile($png,$config{destdir}."/".$page,$data) || die "$!";
+	writefile($png,$config{destdir}."/".$page,$data,1) || die "$!";
     }
 
     my $stylesheet=$page."/tex4ht.css";
