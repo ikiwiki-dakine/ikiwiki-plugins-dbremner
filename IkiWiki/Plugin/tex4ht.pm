@@ -73,9 +73,11 @@ sub htmlize (@)
     {
 	create_tmp_dir ("tex4ht")
     };
+
+    my $texname='tex4iki';
     if (! $@ &&
 	# `htlatex' can't work directly on stdin.
-	writefile ("convertme.tex", $tmp, $params{content}) == 0)
+	writefile ("$texname.tex", $tmp, $params{content}) == 0)
     {
 	return "couldn't write temporary file";
     }
@@ -95,19 +97,19 @@ sub htmlize (@)
     }
     debug("TEXINPUTS=".$ENV{TEXINPUTS});
     debug("calling htlatex for ".$params{page});
-    system('htlatex','index.tex');
+    system('htlatex',$texname.'.tex');
 
     foreach my $png (<*.png>){
 	my $destpng=$page."/".$png;
 	will_render($params{page},$destpng);
 	my $data=readfile($png,1);
-	writefile($config{destdir}."/".$destpng,$data);
+	writefile($png,$config{destdir}."/".$page,$data) || die "$!";
     }
 
     my $stylesheet=$page."/tex4ht.css";
     will_render($params{page},$stylesheet);
 
-    my $css=readfile("index.css");
+    my $css=readfile("$texname.css");
     writefile("tex4ht.css",$config{destdir}."/".$params{page},$css) || die "$!";
 
 
@@ -115,7 +117,7 @@ sub htmlize (@)
 	'" rel="stylesheet"'.
 	' type="text/css" />';
 
-    open(IN,"convertme.html") || die "$!";
+    open(IN,"$texname.html") || die "$!";
     local $/ = undef;
 
     my $ret = <IN>;
