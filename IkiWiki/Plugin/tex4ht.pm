@@ -1,8 +1,8 @@
 # A renderer based on tex4ht, using Thomas Schwinge's texinfo plugin as 
 # a skeleton.
 
-# Copyright © 2007 Thomas Schwinge <tschwinge@gnu.org>
 # Copyright © 2008 David Bremner <bremner@unb.ca>
+# Copyright © 2007 Thomas Schwinge <tschwinge@gnu.org>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -18,8 +18,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-# know issues:
-# png images are generated sometimes, and lost
+
 
 
 package IkiWiki::Plugin::tex4ht;
