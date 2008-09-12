@@ -44,6 +44,7 @@ sub create_tmp_dir ($)
 
 sub import
 {
+    hook (type => "filter", id=>"tex",call=>\&filter);
     hook (type => "htmlize", id => "tex", call => \&htmlize);
     hook (type => "pagetemplate", id=>"tex4ht", call=>\&pagetemplate);
 }
@@ -55,6 +56,16 @@ sub getopt () { #{{{
 	GetOptions("texoverride=s" => \$config{texoverride});
 } #}}}
 
+sub filter(@){
+    my %params = @_;
+    my $page = $params{page};
+    my $content =$params{content};
+
+    return $content if ($content !~ m/\s*\\documentclass/);
+    debug("calling filter for $page ".pagetype($page));
+    $content =~ s/(\[\[[\w\s\|\/\.]+\]\])/\\HCode{$1}/g;
+    return $content;
+}
 
 sub htmlize (@)
 {
