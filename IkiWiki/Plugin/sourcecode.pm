@@ -137,7 +137,7 @@ sub htmlize (@) {
             ' type="text/css" />';
     }
 
-    return '<div id="sourcecode">'."\r\n".join("\r\n",@html)."\r\n</div>\n";
+    return '<div id="sourcecode">'."\r\n".join("",@html)."\r\n</div>\r\n";
 }
 
 sub pagetemplate (@) {
