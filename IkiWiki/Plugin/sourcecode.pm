@@ -87,7 +87,7 @@ sub checkconfig () {
 
     foreach my $lang (split(/[, ]+/, $config{sourcecode_lang})) {
         if ($langs{$lang}) {
-            hook(type => "htmlize", id => $lang, 
+            hook(type => "htmlize", id => $lang, no_override=>1,
 		 call => sub { htmlize(lang=>$lang, @_) }, 
 		 keepextension => 1);
         } else {
