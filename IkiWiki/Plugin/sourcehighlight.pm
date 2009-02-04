@@ -32,7 +32,7 @@ sub checkconfig(@){
 
     foreach my $lang (@langs){
 	# we should check these for validity
-	hook(type => "htmlize", no_override => 1, id => $lang,
+	hook(type => "htmlize", no_override => 1, id => $lang, keepextension => 1,
 	     call => sub { htmlize(lang=>$lang, @_) });
     }
 
