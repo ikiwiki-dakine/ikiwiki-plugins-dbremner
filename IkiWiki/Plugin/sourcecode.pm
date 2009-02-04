@@ -87,7 +87,9 @@ sub checkconfig () {
 
     foreach my $lang (split(/[, ]+/, $config{sourcecode_lang})) {
         if ($langs{$lang}) {
-            hook(type => "htmlize", id => $lang, call => \&htmlize, keepextension => 1);
+            hook(type => "htmlize", id => $lang, 
+		 call => sub { htmlize(lang=>$lang, @_) }, 
+		 keepextension => 1);
         } else {
             error("Your installation of source-highlight cannot handle sourcecode language $lang!");
         }
@@ -113,7 +115,7 @@ sub htmlize (@) {
     }
 
     my $pid = open2(*SPS_IN, *SPS_OUT, $config{sourcecode_command},
-                    '-s', IkiWiki::pagetype($pagesources{$page}),
+                    '-s', $params{lang},
                     '-c', $config{sourcecode_css}, '--no-doc',
                     '-f', 'xhtml',
                     @args);
