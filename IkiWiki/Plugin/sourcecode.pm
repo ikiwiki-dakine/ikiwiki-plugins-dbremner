@@ -109,7 +109,7 @@ sub htmlize (@) {
     my @args;
 
     if ($config{sourcecode_linenumbers}) {
-        push @args, '--line-number= ';
+        push @args, '--line-number ';
     }
 
     my $pid = open2(*SPS_IN, *SPS_OUT, $config{sourcecode_command},
