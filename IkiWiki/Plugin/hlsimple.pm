@@ -11,6 +11,8 @@ use strict;
 use IkiWiki 2.00;
 use open qw{:utf8 :std};
 
+use Syntax::Highlight::Engine::Simple;
+
 my %metaheaders;
 
 sub import {
@@ -50,14 +52,15 @@ sub checkconfig () {
         $config{hlsimple_css} = "hlsimple_style";
     }
 
-    our %highlighter=();
 
     foreach my $key (keys %{$config{hlsimple_lang}}){
-	$highlighter{$lang}=
+
+	my $highlighter=
 	    Syntax::Highlight::Engine::Simple->new(
-		type=>$config{hlsimple_lang}->{$key});
-	hook(type => "htmlize", id => $lang, no_override=>1,
-	     call => sub { htmlize(lang=>$lang, @_) }, 
+		type=>$config{hlsimple_lang}->{$key}) || error($@);
+
+	hook(type => "htmlize", id => $key, no_override=>1,
+	     call => sub { htmlize(highlighter=>$highlighter, @_) }, 
 	     keepextension => 1);
     }
 }
@@ -74,6 +77,8 @@ sub htmlize (@) {
             ' type="text/css" />';
     }
 
+    my $highlighter=$params{highlighter};
+    my @html=();
     return '<div id="hlsimple">'."\r\n".join("",@html)."\r\n</div>\r\n";
 }
 
