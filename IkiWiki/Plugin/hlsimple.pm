@@ -78,8 +78,8 @@ sub htmlize (@) {
     }
 
     my $highlighter=$params{highlighter};
-    my @html=();
-    return '<div id="hlsimple">'."\r\n".join("",@html)."\r\n</div>\r\n";
+
+    return '<div id="hlsimple"><pre>'."\r\n".$highlighter->doStr(str=>$params{content})."\n</pre></div>\r\n";
 }
 
 sub pagetemplate (@) {
@@ -88,10 +88,13 @@ sub pagetemplate (@) {
     my $page=$params{page};
     my $template=$params{template};
 
+    debug("calling hlsimple pagetemplate");
     if (exists $metaheaders{$page} && $template->query(name => "meta")) {
         # avoid duplicate meta lines
         my %seen;
-        $template->param(meta => join("\n", grep { (! $seen{$_}) && ($seen{$_}=1) } @{$metaheaders{$page}}));
+	my @headers=grep { (! $seen{$_}) && ($seen{$_}=1) } @{$metaheaders{$page}};
+	debug("adding headers ".join(" ",@headers));
+        $template->param(meta => join("\n", @headers));
     }
 }
 
