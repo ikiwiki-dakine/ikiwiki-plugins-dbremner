@@ -9,16 +9,16 @@ package IkiWiki::Plugin::hlsimple;
 use warnings;
 use strict;
 use IkiWiki 2.00;
+use IkiWiki::Plugin::meta;
 use open qw{:utf8 :std};
 
 use Syntax::Highlight::Engine::Simple;
 
-my %metaheaders;
 
 sub import {
     hook(type => "getsetup", id => "hlsimple", call => \&getsetup);
     hook(type => "checkconfig", id => "hlsimple", call => \&checkconfig);
-    hook(type => "pagetemplate", id => "hlsimple", call => \&pagetemplate);
+    hook(type => "scan", id => "hlsimple", call => \&scan);
 }
 
 sub getsetup () {
@@ -29,7 +29,7 @@ sub getsetup () {
         },
         hlsimple_lang => {
             type => "string",
-            example => "c=>C,cpp=>Cpp,h=>C,java=>Java",
+            example => "{ c=>C,cpp=>Cpp,h=>C,java=>Java }",
             description => "hash mapping suffixes to subclasses of Syntax::Highlight::Engine::Simple",
             safe => 1,
             rebuild => 1,
@@ -70,32 +70,21 @@ sub htmlize (@) {
 
     my $page = $params{page};
 
-    my $stylesheet=bestlink($page, $config{hlsimple_css}.".css");
-    if (length $stylesheet) {
-        push @{$metaheaders{$page}}, '<link href="'.urlto($stylesheet, $page).'"'.
-            ' rel="stylesheet"'.
-            ' type="text/css" />';
-    }
+    # the array context is needed to trick meta into actually
+    # processing the stylesheet request
+    my @discard=(IkiWiki::Plugin::meta::preprocess(stylesheet=> $config{hlsimple_css}, 
+				      page=>$page, rel=>"stylesheet"));
 
     my $highlighter=$params{highlighter};
 
     return '<div id="hlsimple"><pre>'."\r\n".$highlighter->doStr(str=>$params{content})."\n</pre></div>\r\n";
 }
 
-sub pagetemplate (@) {
+sub scan (@) {
     my %params=@_;
 
     my $page=$params{page};
-    my $template=$params{template};
 
-    debug("calling hlsimple pagetemplate");
-    if (exists $metaheaders{$page} && $template->query(name => "meta")) {
-        # avoid duplicate meta lines
-        my %seen;
-	my @headers=grep { (! $seen{$_}) && ($seen{$_}=1) } @{$metaheaders{$page}};
-	debug("adding headers ".join(" ",@headers));
-        $template->param(meta => join("\n", @headers));
-    }
 }
 
 1
