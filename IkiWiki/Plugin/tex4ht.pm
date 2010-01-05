@@ -27,6 +27,7 @@ use warnings;
 use strict;
 use IkiWiki 2.00;
 use File::Basename;
+use Cwd;
 
 my %metaheaders;
 
@@ -78,6 +79,8 @@ sub htmlize (@)
     {
 	$sigpipe = 1;
     };
+
+    my $origdir=getcwd();
 
     my $tmp = eval
     {
@@ -137,6 +140,7 @@ sub htmlize (@)
     $ret =~ s/.*<\/head>//s;
     $ret =~ s/<\/body>.*//s;
 
+    chdir $origdir || die "could not restore working directory";
     return $ret;
 }
 
